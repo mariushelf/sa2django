@@ -1,10 +1,8 @@
-from django.db import models
+from sa2django import SA2DModel
 
 
-class Parent(models.Model):
+class Parent(SA2DModel):
     class Meta:
+        # sa_model = None  # TODO
         managed = False
         db_table = "parent"
-
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)

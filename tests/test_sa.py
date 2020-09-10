@@ -6,6 +6,8 @@ from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
+import tests.testsite.testapp.models as dm
+
 Base: Type = declarative_base()
 
 
@@ -64,10 +66,7 @@ def test_data(mock_data_session):
 
 @pytest.mark.django_db
 def test_django_orm(mock_data_session):
-    # assert len(mock_data_session.query(Parent).all()) == 2
-    print("IN TEST")
-    import tests.testsite.testapp.models as dm
-
-    print("AFTER IMPORT")
-    parents = dm.Parent.objects.all()
+    parents = dm.Parent.objects.order_by("pk")
     assert len(parents) == 2
+    assert parents[0].name == "Peter"
+    assert parents[1].name == "Hugo"
