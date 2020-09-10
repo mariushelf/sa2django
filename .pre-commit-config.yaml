@@ -1,0 +1,34 @@
+minimum_pre_commit_version: "1.21"
+files: ^.*\.py$
+repos:
+  - repo: https://github.com/asottile/seed-isort-config
+    rev: v1.9.3
+    hooks:
+    - id: seed-isort-config
+  - repo: https://github.com/timothycrosley/isort
+    rev: 4.3.21-2
+    hooks:
+    - id: isort
+      additional_dependencies: [toml]
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+      - id: black
+  - repo: https://github.com/PYCQA/flake8
+    rev: 3.7.9
+    hooks:
+      - id: flake8
+        exclude: ^.venv
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.740
+    hooks:
+    - id: mypy
+      # for args see https://mypy.readthedocs.io/en/stable/command_line.html
+      args: [
+          --no-strict-optional,
+          --ignore-missing-imports,
+          --allow-untyped-globals
+      ]
+default_language_version:
+    python: python3.7
+
