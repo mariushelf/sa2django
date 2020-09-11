@@ -83,7 +83,6 @@ class SA2DBase(ModelBase):
                 to = "self"
             else:
                 to = cls.table_mapping[remote_table]
-            print(to, db_column, to_field, related_name)
             fks[name] = dm.ForeignKey(
                 to,
                 on_delete=dm.CASCADE,
