@@ -1,5 +1,7 @@
-from sa2django import SA2DModel
+from sa2django import SA2DModel, register_table
 from tests.sa_models import SAChild, SAParent
+
+register_table("child", "DMChild")
 
 
 class DMParent(SA2DModel):

@@ -9,6 +9,7 @@ class SAParent(Base):
     __tablename__ = "parent"
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    children = relationship("SAChild", back_populates="parent")
 
 
 class SAChild(Base):
@@ -17,4 +18,4 @@ class SAChild(Base):
     name = Column(String)
     age = Column(Integer)
     parent_id = Column(Integer, ForeignKey("parent.id"))
-    parent = relationship(SAParent, uselist=False)
+    parent = relationship(SAParent, uselist=False, back_populates="children")

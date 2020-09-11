@@ -1,10 +1,15 @@
 import inspect
-from typing import List, Type
+import logging
+from typing import Dict, List, Type
 
-from django.db import models
+import sqlalchemy as sa
+from django.db import models as dm
 from django.db.models.base import ModelBase
+from sqlalchemy.util import symbol
 
 from sa2django.column_mappers import map_column
+
+logger = logging.getLogger(__name__)
 
 
 def extract_tables(module):
@@ -19,9 +24,15 @@ def extract_tables(module):
 
 
 class SA2DBase(ModelBase):
+    table_mapping = {}
+
+    @classmethod
+    def register_table(cls, tablename: str, dm_model_name: str):
+        cls.table_mapping[tablename] = dm_model_name
+
     def __new__(cls, name, bases, attrs, **kwargs):
-        attrs["id"] = models.IntegerField(primary_key=True)
-        attrs["name"] = models.CharField(max_length=100)
+        attrs["id"] = dm.IntegerField(primary_key=True)
+        attrs["name"] = dm.CharField(max_length=100)
         if "Meta" in attrs:
             meta = attrs["Meta"]
             if hasattr(meta, "sa_model"):
@@ -33,17 +44,61 @@ class SA2DBase(ModelBase):
                     # set table name from sa model, unless explicitly specified
                     meta.db_table = sa_model.__tablename__
 
+                cls.register_table(meta.db_table, name)
+
+                ins = sa.inspect(sa_model)
+
+                # make foreign keys
+                fks = cls.foreign_keys(ins)
+                attrs.update(fks)
+                fk_names = {fk.db_column for fk in fks.values()}
+
                 # make columns
-                table = sa_model.__table__
-                for col in table.columns:
+                for col in ins.columns:
+                    if col.name in fk_names:
+                        continue
                     attrs[col.name] = map_column(col)
 
-                # TODO extract columns
                 # TODO keep track of created columns, and recreate of new sa_model is received
         return super().__new__(cls, name, bases, attrs, **kwargs)
 
+    @classmethod
+    def foreign_keys(cls, inspection) -> Dict[str, dm.ForeignKey]:
+        fks = {}
+        table_name = inspection.local_table.name
+        for relation in inspection.relationships:
+            if relation.direction != symbol("MANYTOONE"):
+                continue
+            name = relation.key
+            related_name = relation.back_populates
+            if len(relation.local_remote_pairs) > 1:
+                logger.warning("Foreign key with more than one column. Skipping")
+                continue
+            pair = relation.local_remote_pairs[0]
+            db_column = pair[0].name
+            remote = pair[1]
+            to_field = remote.name
+            remote_table = remote.table.name
+            if remote_table == table_name:
+                to = "self"
+            else:
+                to = cls.table_mapping[remote_table]
+            print(to, db_column, to_field, related_name)
+            fks[name] = dm.ForeignKey(
+                to,
+                on_delete=dm.CASCADE,
+                db_column=db_column,
+                to_field=to_field,
+                related_name=related_name,
+            )
+        return fks
 
-class SA2DModel(models.Model, metaclass=SA2DBase):  # TODO
+
+class SA2DModel(dm.Model, metaclass=SA2DBase):
     class Meta:
         abstract = True
         managed = False
+
+
+def register_table(tablename: str, dm_model_name: str):
+    SA2DBase.register_table(tablename, dm_model_name)

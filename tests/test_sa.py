@@ -59,8 +59,12 @@ def test_django_orm(mock_data_session):
 
 
 @pytest.mark.django_db
-def test_one_to_one_fk(mock_data_session):
+def test_fk(mock_data_session):
     parent = dm.DMParent.objects.get(name="Peter")
     dm_child = dm.DMChild.objects.get(name="Hans")
     assert dm_child.parent_id == parent.id
     assert dm_child.parent == parent
+
+    # test back reference
+    assert len(parent.children.all()) == 2
+    assert dm_child in parent.children.all()
