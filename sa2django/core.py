@@ -31,8 +31,8 @@ class SA2DBase(ModelBase):
         cls.table_mapping[tablename] = dm_model_name
 
     def __new__(cls, name, bases, attrs, **kwargs):
-        attrs["id"] = dm.IntegerField(primary_key=True)
-        attrs["name"] = dm.CharField(max_length=100)
+        # attrs["id"] = dm.IntegerField(primary_key=True)
+        # attrs["name"] = dm.CharField(max_length=100)
         if "Meta" in attrs:
             meta = attrs["Meta"]
             if hasattr(meta, "sa_model"):
@@ -63,11 +63,13 @@ class SA2DBase(ModelBase):
         return super().__new__(cls, name, bases, attrs, **kwargs)
 
     @classmethod
-    def foreign_keys(cls, inspection) -> Dict[str, dm.ForeignKey]:
+    def foreign_keys(mcs, inspection) -> Dict[str, dm.ForeignKey]:
         fks = {}
         table_name = inspection.local_table.name
         for relation in inspection.relationships:
+            print(f"{relation.direction=}")
             if relation.direction != symbol("MANYTOONE"):
+                print(f"Ignoring relation with direction {relation.direction}")
                 continue
             name = relation.key
             related_name = relation.back_populates
@@ -82,7 +84,7 @@ class SA2DBase(ModelBase):
             if remote_table == table_name:
                 to = "self"
             else:
-                to = cls.table_mapping[remote_table]
+                to = mcs.table_mapping[remote_table]
             fks[name] = dm.ForeignKey(
                 to,
                 on_delete=dm.CASCADE,

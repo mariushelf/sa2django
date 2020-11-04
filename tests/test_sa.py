@@ -34,15 +34,11 @@ def session(engine):
 def mock_data_session(session):
     parent = SAParent(name="Peter")
     parent2 = SAParent(name="Hugo")
-    child1 = SAChild(name="Hans", age=3, parent=parent)
-    child2 = SAChild(name="Franz", age=5, parent=parent)
+    child1 = SAChild(name="Hans", age=3, parent=parent, boolfield=True)
+    child2 = SAChild(name="Franz", age=5, parent=parent, boolfield=False)
     session.add_all([parent, parent2, child1, child2])
     session.commit()
     return session
-
-
-# @pytest.fixture(scope="session")
-# def parent_without_child(session):
 
 
 def test_data(mock_data_session):
@@ -68,3 +64,9 @@ def test_fk(mock_data_session):
     # test back reference
     assert len(parent.children.all()) == 2
     assert dm_child in parent.children.all()
+
+
+@pytest.mark.django_db
+def test_pk(mock_data_session):
+    assert dm.DMChild._meta.pk.name == "key"
+    assert dm.DMParent._meta.pk.name == "id"

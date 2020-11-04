@@ -1,11 +1,12 @@
 import django.db.models as dm
 import sqlalchemy as sa
+from django.contrib.postgres.fields import CITextField
 from sqlalchemy.sql.type_api import TypeEngine
+
+from citext import CIText
 
 
 class TypeMapper:
-    type
-
     def __init__(self):
         pass
 
@@ -24,6 +25,12 @@ class IntMapper(TypeMapper):
         return dm.IntegerField
 
 
+class FloatMapper(TypeMapper):
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.FloatField
+
+
 class StringMapper(TypeMapper):
     @classmethod
     def field_cls(cls, type: TypeEngine):
@@ -34,10 +41,26 @@ class StringMapper(TypeMapper):
         return dict(max_length=type.length)
 
 
+class CITextMapper(TypeMapper):
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return CITextField
+
+
+class BooleanMapper(TypeMapper):
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.BooleanField
+
+
 type_mappers = {
     sa.Integer: IntMapper,
     sa.INTEGER: IntMapper,
     sa.String: StringMapper,
+    sa.Float: FloatMapper,
+    sa.FLOAT: FloatMapper,
+    CIText: CITextMapper,
+    sa.Boolean: BooleanMapper,
 }
 
 
