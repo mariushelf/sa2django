@@ -1,9 +1,8 @@
 import django.db.models as dm
 import sqlalchemy as sa
+from citext import CIText
 from django.contrib.postgres.fields import CITextField
 from sqlalchemy.sql.type_api import TypeEngine
-
-from citext import CIText
 
 
 class TypeMapper:
@@ -69,6 +68,8 @@ def common_kwargs(sa_col: sa.Column):
         primary_key=sa_col.primary_key,
         unique=sa_col.unique,
         help_text=sa_col.description,
+        null=sa_col.nullable,
+        blank=sa_col.nullable,
     )
     return kwargs
 

@@ -1,10 +1,23 @@
+from citext import CIText
 from sqlalchemy import FLOAT, Boolean, Column, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from citext import CIText
-
 Base = declarative_base()
+
+
+class SACarParentAssoc(Base):
+    __tablename__ = "cartoparent"
+    id = Column(Integer, primary_key=True)
+    car_id = Column(Integer, ForeignKey("car.car_id"))
+    parent_id = Column(Integer, ForeignKey("parent.id"))
+
+
+class SACar(Base):
+    __tablename__ = "car"
+    car_id = Column(Integer, primary_key=True)
+    horsepower = Column(Integer)
+    drivers = relationship("SAParent", secondary="cartoparent", back_populates="cars")
 
 
 class SAParent(Base):
@@ -12,6 +25,9 @@ class SAParent(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     children = relationship("SAChild", back_populates="parent")
+    cars = relationship(
+        "SACar", secondary=SACarParentAssoc.__table__, back_populates="drivers"
+    )
 
 
 class SAChild(Base):
