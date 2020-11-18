@@ -1,12 +1,14 @@
 # SqlAlchemy to Django model
 
-* Author: Marius Helf 
-  ([helfsmarius@gmail.com](mailto:helfsmarius@gmail.com))
+Convert sqlalchemy database schemas to django database models at runtime.
 
-Python Boilerplate contains all the boilerplate you need to create a Python package.
+Original url: [https://github.com/mariushelf/sa2django](https://github.com/mariushelf/sa2django)
+
 
 # License
 
-[MIT](https://choosealicense.com/licenses/mit)
+[MIT](LICENSE)
 
 
+Author: Marius Helf 
+  ([helfsmarius@gmail.com](mailto:helfsmarius@gmail.com))
