@@ -1,26 +1,5 @@
-from sa2django import SA2DModel, register_table
-from tests.sa_models import SACar, SACarParentAssoc, SAChild, SAParent
+from sa2django.core import generate_sa2d_models, inject_models
+from tests.sa_models import Base
 
-register_table("child", "DMChild")
-register_table("car", "DMCar")
-register_table("cartoparent", "DMCarParentAssoc")
-
-
-class DMParent(SA2DModel):
-    class Meta:
-        sa_model = SAParent
-
-
-class DMChild(SA2DModel):
-    class Meta:
-        sa_model = SAChild
-
-
-class DMCar(SA2DModel):
-    class Meta:
-        sa_model = SACar
-
-
-class DMCarParentAssoc(SA2DModel):
-    class Meta:
-        sa_model = SACarParentAssoc
+_models = generate_sa2d_models(Base, __name__)
+inject_models(_models, globals())

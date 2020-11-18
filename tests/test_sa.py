@@ -52,22 +52,22 @@ def test_data(mock_data_session):
 
 @pytest.mark.django_db
 def test_django_orm(mock_data_session):
-    parents = dm.DMParent.objects.order_by("pk")
+    parents = dm.SAParent.objects.order_by("pk")
     assert len(parents) == 2
     assert parents[0].name == "Peter"
     assert parents[1].name == "Hugo"
 
 
 def test_nullable(mock_data_session):
-    print(dm.DMChild.boolfield)
-    assert dm.DMChild._meta.get_field("boolfield").null == False
-    assert dm.DMChild._meta.get_field("citextfield").null == True
+    print(dm.SAChild.boolfield)
+    assert dm.SAChild._meta.get_field("boolfield").null == False
+    assert dm.SAChild._meta.get_field("citextfield").null == True
 
 
 @pytest.mark.django_db
 def test_fk(mock_data_session):
-    parent = dm.DMParent.objects.get(name="Peter")
-    dm_child = dm.DMChild.objects.get(name="Hans")
+    parent = dm.SAParent.objects.get(name="Peter")
+    dm_child = dm.SAChild.objects.get(name="Hans")
     assert dm_child.parent_id == parent.id
     assert dm_child.parent == parent
 
@@ -78,42 +78,42 @@ def test_fk(mock_data_session):
 
 @pytest.mark.django_db
 def test_pk(mock_data_session):
-    assert dm.DMChild._meta.pk.name == "key"
-    assert dm.DMParent._meta.pk.name == "id"
+    assert dm.SAChild._meta.pk.name == "key"
+    assert dm.SAParent._meta.pk.name == "id"
 
 
 @pytest.mark.django_db
 def test_many_to_many(mock_data_session):
 
-    meta = dm.DMChild._meta
+    meta = dm.SAChild._meta
     print()
     print(f"{meta=}")
     for field in meta.get_fields():
         print(f"{field.name=}; {meta.get_field(field.name)}")
 
-    meta = dm.DMCarParentAssoc._meta
+    meta = dm.SACarParentAssoc._meta
     print()
     print(f"{meta=}")
     for field in meta.get_fields():
         print(f"{field.name=}; {meta.get_field(field.name)}")
 
-    meta = dm.DMParent._meta
+    meta = dm.SAParent._meta
     print()
     print(f"{meta=}")
     for field in meta.get_fields():
         print(f"{field.name=}; {meta.get_field(field.name)}")
 
-    meta = dm.DMCar._meta
+    meta = dm.SACar._meta
     print()
     print(f"{meta=}")
     for field in meta.get_fields():
         print(f"{field.name=}; {meta.get_field(field.name)}")
 
-    peter = dm.DMParent.objects.get(name="Peter")
+    peter = dm.SAParent.objects.get(name="Peter")
     assert len(peter.cars.all()) == 2
 
-    car0 = dm.DMCar.objects.all()[0]
+    car0 = dm.SACar.objects.all()[0]
     assert car0.drivers.all()[0].name == "Peter"
 
-    car1 = dm.DMCar.objects.all()[1]
+    car1 = dm.SACar.objects.all()[1]
     assert car1.drivers.all()[0].name == "Peter"
