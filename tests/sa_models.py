@@ -6,31 +6,31 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
-class SACarParentAssoc(Base):
+class CarParentAssoc(Base):
     __tablename__ = "cartoparent"
     id = Column(Integer, primary_key=True)
     car_id = Column(Integer, ForeignKey("car.car_id"))
     parent_id = Column(Integer, ForeignKey("parent.id"))
 
 
-class SACar(Base):
+class Car(Base):
     __tablename__ = "car"
     car_id = Column(Integer, primary_key=True)
     horsepower = Column(Integer)
-    drivers = relationship("SAParent", secondary="cartoparent", back_populates="cars")
+    drivers = relationship("Parent", secondary="cartoparent", back_populates="cars")
 
 
-class SAParent(Base):
+class Parent(Base):
     __tablename__ = "parent"
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    children = relationship("SAChild", back_populates="parent")
+    children = relationship("Child", back_populates="parent")
     cars = relationship(
-        "SACar", secondary=SACarParentAssoc.__table__, back_populates="drivers"
+        "Car", secondary=CarParentAssoc.__table__, back_populates="drivers"
     )
 
 
-class SAChild(Base):
+class Child(Base):
     __tablename__ = "child"
     key = Column(Integer, primary_key=True)
     name = Column(String)
@@ -40,4 +40,4 @@ class SAChild(Base):
     citextfield = Column(CIText)
     boolfield = Column(Boolean, nullable=False)
     parent_id = Column(Integer, ForeignKey("parent.id"))
-    parent = relationship(SAParent, uselist=False, back_populates="children")
+    parent = relationship(Parent, uselist=False, back_populates="children")
