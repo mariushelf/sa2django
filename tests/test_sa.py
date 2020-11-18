@@ -25,7 +25,6 @@ def engine():
 def session(engine):
     print("CREATE TABLES")
     Base.metadata.create_all(engine)
-    print(f"{Base.metadata.tables.keys()=}")
     session = sessionmaker(bind=engine)()
     yield session
     session.close()
@@ -59,7 +58,6 @@ def test_django_orm(mock_data_session):
 
 
 def test_nullable(mock_data_session):
-    print(dm.Child.boolfield)
     assert dm.Child._meta.get_field("boolfield").null == False
     assert dm.Child._meta.get_field("citextfield").null == True
 
@@ -84,31 +82,6 @@ def test_pk(mock_data_session):
 
 @pytest.mark.django_db
 def test_many_to_many(mock_data_session):
-
-    meta = dm.Child._meta
-    print()
-    print(f"{meta=}")
-    for field in meta.get_fields():
-        print(f"{field.name=}; {meta.get_field(field.name)}")
-
-    meta = dm.CarParentAssoc._meta
-    print()
-    print(f"{meta=}")
-    for field in meta.get_fields():
-        print(f"{field.name=}; {meta.get_field(field.name)}")
-
-    meta = dm.Parent._meta
-    print()
-    print(f"{meta=}")
-    for field in meta.get_fields():
-        print(f"{field.name=}; {meta.get_field(field.name)}")
-
-    meta = dm.Car._meta
-    print()
-    print(f"{meta=}")
-    for field in meta.get_fields():
-        print(f"{field.name=}; {meta.get_field(field.name)}")
-
     peter = dm.Parent.objects.get(name="Peter")
     assert len(peter.cars.all()) == 2
 

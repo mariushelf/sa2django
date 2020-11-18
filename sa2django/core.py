@@ -42,7 +42,9 @@ class SA2DBase(ModelBase):
                     # set table name from sa model, unless explicitly specified
                     meta.db_table = sa_model.__tablename__
 
-                print(f"\nGenerating Django model for table '{sa_model.__tablename__}'")
+                logger.debug(
+                    f"\nGenerating Django model for table '{sa_model.__tablename__}'"
+                )
 
                 cls.register_table(meta.db_table, name)
 
@@ -57,14 +59,11 @@ class SA2DBase(ModelBase):
                 m2ms = cls.many_to_many_fields(sa_model)
                 attrs.update(m2ms)
                 m2m_names = {m2m.db_column for m2m in m2ms.values()}
-                print(m2ms)
 
                 # make columns
                 for col in ins.columns:
                     if col.name in fk_names | m2m_names:
-                        print(f"Skipping {col.name=}")
                         continue
-                    print(f"Adding column {col.name=}")
                     attrs[col.name] = map_column(col)
 
                 # TODO keep track of created columns, and recreate if new sa_model is received
@@ -74,27 +73,19 @@ class SA2DBase(ModelBase):
     def foreign_keys(mcs, sa_model) -> Dict[str, dm.ForeignKey]:
         inspection = sa.inspect(sa_model)
         fks = {}
-        print("--- foreign_keys ---")
         table_name = sa_model.__tablename__
-        print(f"{table_name=}")
         all_col_names = {c.name for c in inspection.columns}
         for column in inspection.columns:
-            col_name = column.name
             for fk in column.foreign_keys:
                 target_col = fk.column
-                print(f"{col_name=}, {target_col=}")
 
                 # try to find matching relation
-                try:
-                    relations = [
-                        r
-                        for r in inspection.relationships
-                        if r.direction == symbol("MANYTOONE")
-                        and r.local_remote_pairs[0][0] == column
-                    ]
-                except AttributeError:
-                    # relations = []
-                    raise
+                relations = [
+                    r
+                    for r in inspection.relationships
+                    if r.direction == symbol("MANYTOONE")
+                    and r.local_remote_pairs[0][0] == column
+                ]
                 relation = relations[0] if relations else None
                 if relation:
                     field_name = relation.key
@@ -135,14 +126,10 @@ class SA2DBase(ModelBase):
 
     @classmethod
     def many_to_many_fields(mcs, sa_model):
-        print("--- many_to_many_fields ---")
         inspection = sa.inspect(sa_model)
         table_name = sa_model.__tablename__
-        print(f"{table_name=}")
 
         m2ms = {}
-        # if not hasattr(inspection, "relationships"):
-        #     return m2ms
         for relation in inspection.relationships:
             if relation.direction != symbol("MANYTOMANY"):
                 continue
@@ -163,7 +150,6 @@ class SA2DBase(ModelBase):
                 to = "self"
             else:
                 to = mcs.table_mapping[remote_table]
-            print(f"Adding ManyToManyField {name=} for {table_name=}")
             m2ms[name] = dm.ManyToManyField(
                 to,
                 through=through_table,
@@ -226,7 +212,6 @@ def generate_sa2d_models(base, modulename: str) -> List[type]:
     # register all tables
     for tablename, sa_class in tables.items():
         register_table(tablename, sa_class.__name__)
-    print(f"{tables=}")
 
     # generate all django models
     django_models = []
