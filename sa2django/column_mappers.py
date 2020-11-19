@@ -2,6 +2,7 @@ import django.db.models as dm
 import sqlalchemy as sa
 from citext import CIText
 from django.contrib.postgres.fields import CITextField
+from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.sql.type_api import TypeEngine
 
 
@@ -52,14 +53,33 @@ class BooleanMapper(TypeMapper):
         return dm.BooleanField
 
 
+class BinaryMapper(TypeMapper):
+    # TODO parameters?
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.BinaryField
+
+
+class DateMapper(TypeMapper):
+    # TODO parameters?
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.DateField
+
+
 type_mappers = {
     sa.Integer: IntMapper,
     sa.INTEGER: IntMapper,
     sa.String: StringMapper,
+    sa.CHAR: StringMapper,
     sa.Float: FloatMapper,
     sa.FLOAT: FloatMapper,
+    sa.Numeric: FloatMapper,
     CIText: CITextMapper,
     sa.Boolean: BooleanMapper,
+    BYTEA: BinaryMapper,
+    sa.DATE: DateMapper,
+    sa.Date: DateMapper,
 }
 
 
