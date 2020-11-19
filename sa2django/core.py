@@ -52,19 +52,24 @@ class SA2DBase(ModelBase):
 
                 # make foreign keys
                 fks = cls.foreign_keys(sa_model)
-                attrs.update(fks)
+                for k, v in fks.items():
+                    if k not in attrs:
+                        attrs[k] = v
                 fk_names = {fk.db_column for fk in fks.values()}
 
                 # make many to many fields
                 m2ms = cls.many_to_many_fields(sa_model)
-                attrs.update(m2ms)
+                for k, v in m2ms.items():
+                    if k not in attrs:
+                        attrs[k] = v
                 m2m_names = {m2m.db_column for m2m in m2ms.values()}
 
                 # make columns
                 for col in ins.columns:
                     if col.name in fk_names | m2m_names:
                         continue
-                    attrs[col.name] = map_column(col)
+                    if col.name not in attrs:
+                        attrs[col.name] = map_column(col)
 
                 # TODO keep track of created columns, and recreate if new sa_model is received
         return super().__new__(cls, name, bases, attrs, **kwargs)
