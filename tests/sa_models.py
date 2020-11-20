@@ -9,7 +9,9 @@ Base = declarative_base()
 class CarParentAssoc(Base):
     __tablename__ = "cartoparent"
     id = Column(Integer, primary_key=True)
-    car_id = Column(Integer, ForeignKey("car.car_id"))
+    car = relationship("Car")
+    parent = relationship("Parent")
+    id_car = Column(Integer, ForeignKey("car.car_id"))
     parent_id = Column(Integer, ForeignKey("parent.id"))
 
 
@@ -25,9 +27,7 @@ class Parent(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     children = relationship("Child", back_populates="parent")
-    cars = relationship(
-        "Car", secondary=CarParentAssoc.__table__, back_populates="drivers"
-    )
+    cars = relationship("Car", secondary="cartoparent", back_populates="drivers")
 
 
 class Child(Base):
