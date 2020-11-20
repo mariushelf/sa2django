@@ -48,6 +48,11 @@ There are probably a lot of corner cases and advanced (or not so advanced) featu
 of SQLAlchemy that are not (yet) supported.
 
 
+# Installation
+
+`pip install sa2django`
+
+
 # Features
 
 * basic data types (int, float, string, varchar, char, date, datetime etc, bytea)
