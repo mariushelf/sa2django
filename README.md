@@ -24,8 +24,7 @@ application. Those sources already specify a complete SQLAlchemy model.
 Hence we already have a full specification of the data model in SQLAlchemy.
 
 
-## Why not simply use `inspectdb` to dynamically generate the Django model
-specifications?
+## Why not simply use `inspectdb` to dynamically generate the Django model specifications?
 
 [inspectdb](https://docs.djangoproject.com/en/3.1/howto/legacy-databases/) is not
 that dynamic after all -- it generates a Python file once, which needs to be manually
