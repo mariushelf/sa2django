@@ -14,6 +14,10 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation :: PyPy"
 ]
+homepage = "https://github.com/mariushelf/sa2django"
+repository = "https://github.com/mariushelf/sa2django"
+documentation = "https://github.com/mariushelf/sa2django"
+
 
 [tool.poetry.dependencies]
 python = "^3.6"
