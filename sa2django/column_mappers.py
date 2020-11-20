@@ -25,6 +25,12 @@ class IntMapper(TypeMapper):
         return dm.IntegerField
 
 
+class BigIntMapper(TypeMapper):
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.BigIntegerField
+
+
 class FloatMapper(TypeMapper):
     @classmethod
     def field_cls(cls, type: TypeEngine):
@@ -54,17 +60,21 @@ class BooleanMapper(TypeMapper):
 
 
 class BinaryMapper(TypeMapper):
-    # TODO parameters?
     @classmethod
     def field_cls(cls, type: TypeEngine):
         return dm.BinaryField
 
 
 class DateMapper(TypeMapper):
-    # TODO parameters?
     @classmethod
     def field_cls(cls, type: TypeEngine):
         return dm.DateField
+
+
+class DateTimeMapper(TypeMapper):
+    @classmethod
+    def field_cls(cls, type: TypeEngine):
+        return dm.DateTimeField
 
 
 type_mappers = {
@@ -80,6 +90,10 @@ type_mappers = {
     BYTEA: BinaryMapper,
     sa.DATE: DateMapper,
     sa.Date: DateMapper,
+    sa.BIGINT: BigIntMapper,
+    sa.BigInteger: BigIntMapper,
+    sa.DateTime: DateTimeMapper,
+    sa.DATETIME: DateTimeMapper,
 }
 
 
