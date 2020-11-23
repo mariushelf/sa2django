@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sa2django"
-version = "0.1.0"
+version = "0.1.1"
 description = "Convert sqlalchemy database schemas to django database models at runtime."
 authors = ["Marius Helf <helfsmarius@gmail.com>"]
 license = "MIT"
