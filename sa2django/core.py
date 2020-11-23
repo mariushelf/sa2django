@@ -113,6 +113,7 @@ class SA2DBase(ModelBase):
                         raise ValueError("target_col in FK != target col in relation")
                 else:
                     continue
+                nullable = column.nullable
                 to_field = target_col.name
                 remote_table = target_col.table.name
                 if remote_table == table_name:
@@ -125,6 +126,8 @@ class SA2DBase(ModelBase):
                     db_column=column.name,
                     to_field=to_field,
                     related_name=related_name,
+                    null=nullable,
+                    blank=nullable,
                 )
         return fks
 
