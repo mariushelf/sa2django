@@ -45,6 +45,9 @@ The SQLAlchemy to Django Bridge works well for the author's use case.
 There are probably a lot of corner cases and advanced (or not so advanced) features
 of SQLAlchemy that are not (yet) supported.
 
+The tests run in sqlite, and our production system uses PostgreSQL.
+It may or may not work with other database systems.
+
 
 # Installation
 
