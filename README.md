@@ -206,6 +206,13 @@ tailored to its author's current needs.
   relationship attributes are specified.
 
 
+# Changelog
+## 0.1.3
+- set arbitrary `max_length` of 2048 on String fields that do not have a defined length
+  in sqlalchemy. Necessary because Django does not support unlimited String fields, even
+  though some backends (e.g., Postgres) do
+
+
 # Contributing
 
 Pull requests are more than welcome! Ideally reach out to us by creating or replying
