@@ -38,13 +38,20 @@ class FloatMapper(TypeMapper):
 
 
 class StringMapper(TypeMapper):
+    DEFAULT_LENGTH = 2048
+    """ Django does not support unspecified max_length, but some backends
+    (e.g., Postgres), do. So we set this value as an artificial max_length.
+    """
+
     @classmethod
     def field_cls(cls, type: TypeEngine):
         return dm.CharField
 
     @classmethod
     def type_kwargs(cls, type: TypeEngine):
-        return dict(max_length=type.length)
+        return dict(
+            max_length=type.length if type.length is not None else cls.DEFAULT_LENGTH
+        )
 
 
 class CITextMapper(TypeMapper):
