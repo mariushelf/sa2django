@@ -93,42 +93,35 @@ class SA2DBase(ModelBase):
         inspection = sa.inspect(sa_model)
         fks = {}
         table_name = sa_model.__tablename__
-        for column in inspection.columns:
-            for fk in column.foreign_keys:
-                target_col = fk.column
-
-                # try to find matching relation
-                relations = mcs.relations_with_column(column, inspection)
-                relation = relations[0] if relations else None
-                if relation:
-                    field_name = relation.key
-                    related_name = relation.back_populates
-                    if related_name is None:
-                        related_name = "+"
-                    if len(relation.local_remote_pairs) > 1:
-                        logger.error("Foreign key with more than one column. Skipping")
-                        continue
-                    pair = relation.local_remote_pairs[0]
-                    if pair[1] != target_col:
-                        raise ValueError("target_col in FK != target col in relation")
-                else:
-                    continue
-                nullable = column.nullable
-                to_field = target_col.name
-                remote_table = target_col.table.name
-                if remote_table == table_name:
-                    to = "self"
-                else:
-                    to = mcs.table_mapping[remote_table]
-                fks[field_name] = dm.ForeignKey(
-                    to,
-                    on_delete=dm.CASCADE,
-                    db_column=column.name,
-                    to_field=to_field,
-                    related_name=related_name,
-                    null=nullable,
-                    blank=nullable,
-                )
+        for relation in inspection.relationships:
+            if relation.direction != symbol("MANYTOONE"):
+                continue
+            field_name = relation.key
+            related_name = relation.back_populates
+            if related_name is None:
+                related_name = "+"
+            if len(relation.local_remote_pairs) > 1:
+                logger.error("Foreign key with more than one column. Skipping")
+                continue
+            pair = relation.local_remote_pairs[0]
+            local_col = pair[0]
+            remote_col = pair[1]
+            nullable = local_col.nullable
+            to_field = remote_col.name
+            remote_table = remote_col.table.name
+            if remote_table == table_name:
+                to = "self"
+            else:
+                to = mcs.table_mapping[remote_table]
+            fks[field_name] = dm.ForeignKey(
+                to,
+                on_delete=dm.CASCADE,
+                db_column=local_col.name,
+                to_field=to_field,
+                related_name=related_name,
+                null=nullable,
+                blank=nullable,
+            )
         return fks
 
     @classmethod

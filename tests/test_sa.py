@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import tests.testsite.testapp.models as dm
-from tests.sa_models import Base, Car, Child, Parent
+from tests.sa_models import Base, Car, Child, Dog, Parent
 
 
 @pytest.fixture(scope="session")
@@ -36,10 +36,12 @@ def mock_data_session(session):
     parent2 = Parent(name="Hugo")
     child1 = Child(name="Hans", age=3, parent=parent, boolfield=True)
     child2 = Child(name="Franz", age=5, parent=parent, boolfield=False)
+    dog1 = Dog(name="Rex")
+    dog1.owners = [child2]
     car1 = Car(horsepower=560)
     car2 = Car(horsepower=32)
     parent.cars = [car1, car2]
-    session.add_all([parent, parent2, child1, child2])
+    session.add_all([parent, parent2, child1, child2, dog1])
     session.commit()
     return session
 
@@ -90,3 +92,11 @@ def test_many_to_many(mock_data_session):
 
     car1 = dm.Car.objects.all()[1]
     assert car1.drivers.all()[0].name == "Peter"
+
+
+@pytest.mark.django_db
+def test_relation_without_fk(mock_data_session):
+    franz = dm.Child.objects.get(name="Franz")
+    rex = dm.Dog.objects.get(name="Rex")
+    assert franz.dog == rex
+    assert list(rex.owners.all()) == [franz]

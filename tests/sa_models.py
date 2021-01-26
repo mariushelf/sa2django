@@ -30,6 +30,12 @@ class Parent(Base):
     cars = relationship("Car", secondary="cartoparent", back_populates="drivers")
 
 
+class Dog(Base):
+    __tablename__ = "dog"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+
 class Child(Base):
     __tablename__ = "child"
     key = Column(Integer, primary_key=True)
@@ -40,4 +46,8 @@ class Child(Base):
     citextfield = Column(CIText)
     boolfield = Column(Boolean, nullable=False)
     parent_id = Column(Integer, ForeignKey("parent.id"))
+    dog_id = Column(Integer)
     parent = relationship(Parent, uselist=False, back_populates="children")
+    dog = relationship(
+        Dog, primaryjoin="Child.dog_id == Dog.id", foreign_keys=dog_id, backref="owners"
+    )
