@@ -207,6 +207,10 @@ tailored to its author's current needs.
 
 
 # Changelog
+## 0.2.0
+- derive foreignkeys from MANYTOONE relationships instead of relying on explicit
+  ForeignKey columns
+
 ## 0.1.3
 - set arbitrary `max_length` of 2048 on String fields that do not have a defined length
   in sqlalchemy. Necessary because Django does not support unlimited String fields, even
