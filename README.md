@@ -207,6 +207,9 @@ tailored to its author's current needs.
 
 
 # Changelog
+## 0.2.1
+- limit to SQLAlchemy <1.4
+
 ## 0.2.0
 - derive foreignkeys from MANYTOONE relationships instead of relying on explicit
   ForeignKey columns

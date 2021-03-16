@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sa2django"
-version = "0.2.0"
+version = "0.2.1"
 description = "Convert sqlalchemy database schemas to django database models at runtime."
 authors = ["Marius Helf <helfsmarius@gmail.com>"]
 license = "MIT"
@@ -21,7 +21,7 @@ documentation = "https://github.com/mariushelf/sa2django"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-sqlalchemy = "^1.3.19"
+sqlalchemy = "^1.3,<1.4"
 django = "^3.1.1"
 sqlalchemy-citext = "^1.7.0"
 psycopg2 = "^2.8.6"
